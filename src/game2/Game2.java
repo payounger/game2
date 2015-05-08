@@ -37,6 +37,11 @@ public class Game2 extends World {
 
     public World onTick() {
 
+        for(int i = 0; i < worldArray.length; i++){
+            if(worldArray[i].getKey()==4){
+                worldArray[i].setKey(0); //this function clears the attack effect every tick
+            }
+        }
         return new Game2(worldArray, ticker++, 0);
 
     }
@@ -90,6 +95,20 @@ public class Game2 extends World {
                 w = new Game2(worldArray, ticker, 0);
             }
         }
+        
+        if (ke.equals(" ")) {
+            for(int dx = -1; dx <= 1; dx++){
+                for(int dy = -1; dy <= 1; dy++){
+                    int currentIndex = DXDYIndex(dx, dy);
+//                    if(worldArray[currentIndex].getKey()!=1 | worldArray[currentIndex].getKey() != 2){
+//                        worldArray[currentIndex].setKey(4);
+//                    }
+                    if(worldArray[currentIndex].getKey() != 1){
+                        worldArray[currentIndex].setKey(4);
+                    }
+                }
+            } 
+        }
 
         return w;
 
@@ -108,8 +127,10 @@ public class Game2 extends World {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Blue()));
             } else if (worldArray[i].getKey() == 2) {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Black()));
-            } else /*if (worldArray[i].getKey() == 3)*/ {
+            } else if (worldArray[i].getKey() == 3) {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Red()));
+            } else /* if (worldArray[i].getKey() == 4)*/ {
+                scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Green()));
             }
         }
         return scene;
@@ -156,7 +177,7 @@ public class Game2 extends World {
             
         }
         worldArray[middleOfWorld].setKey(1);
-        //worldArray[23].setKey(2);
+        worldArray[middleOfWorld+3].setKey(3);
 
     }
 
@@ -177,5 +198,18 @@ public class Game2 extends World {
             } //else should throw an excepttion but this should never be reached
         }
         throw new RuntimeException("player object not found");
+    }
+    
+    public int calcIndex(int x, int y){
+        return y * (n) + x;
+    }
+    
+    public int DXDYIndex(int dx, int dy){
+        int playerX = playerLocation().getX();
+        int playerY = playerLocation().getY();
+        int playerIndex = calcIndex(playerX, playerY);
+        
+        return (playerIndex+(dy*n)+dx);
+        
     }
 }
