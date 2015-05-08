@@ -8,21 +8,29 @@ import java.util.Random;
 
 public class Game2 extends World {
 
-    public static int n = 10;
+    public static int n = 13;
     public static int side = 50;
     DataStruct[] worldArray;
     public int ticker = 0;
+    int score;
+    public static int middleOfWorld = (n*(((n-1)/2)))+((n-1)/2);
+    public static int middleLeftDoor = ((n-1)/2)*n;
+    public static int middleRightDoor = middleLeftDoor+n-1;
+    public static int middleTopDoor = (n-1)/2;
+    public static int middleBottomDoor = middleTopDoor+((n-1)*n);
 
     public Game2(DataStruct[] array, int ticks, int score) {
         super();
-        array = worldArray;
+        worldArray = array;
+        this.score = score;
+        ticker = ticks;
 
     }
 
     public static void main(String[] args) {
         Game2 world;
         world = new Game2(new DataStruct[n * n], 0, 0);
-        world.genEmptyArray();
+        world.genScrOne();
         world.bigBang(n * side, n * side, 0.15);
 
     }
@@ -38,38 +46,53 @@ public class Game2 extends World {
         int playerY = playerLocation().getY();
         int playerIndex = playerY * (n) + playerX;
         World w;
-        
-        if(ke.equals("right")){
-            if(playerX != n-1){
+        w = this;
+
+        if (ke.equals("right")) {
+            if (playerX != n - 1) {
+                if (worldArray[playerIndex + 1].getKey() == 2) {
+                    return w;
+                }
                 //worldArray[playerIndex+1].getKey()
                 worldArray[playerIndex].setKey(0);
-                worldArray[playerIndex+1].setKey(1);
+                worldArray[playerIndex + 1].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
             }
-            
+
         }
-        if(ke.equals("left")){
-            if(playerX != 0){
+        if (ke.equals("left")) {
+            if (playerX != 0) {
+                if (worldArray[playerIndex - 1].getKey() == 2) {
+                    return w;
+                }
                 worldArray[playerIndex].setKey(0);
-                worldArray[playerIndex-1].setKey(1);
+                worldArray[playerIndex - 1].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
             }
         }
-        if(ke.equals("up")){
-            if(playerY != 0){
+        if (ke.equals("up")) {
+            if (playerY != 0) {
+                if (worldArray[playerIndex - n].getKey() == 2) {
+                    return w;
+                }
                 worldArray[playerIndex].setKey(0);
-                worldArray[playerIndex-n].setKey(1);
+                worldArray[playerIndex - n].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
             }
         }
-        if(ke.equals("down")){
-            if(playerY != n-1){
+        if (ke.equals("down")) {
+            if (playerY != n - 1) {
+                if (worldArray[playerIndex + n].getKey() == 2) {
+                    return w;
+                }
                 worldArray[playerIndex].setKey(0);
-                worldArray[playerIndex+n].setKey(1);
+                worldArray[playerIndex + n].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
             }
         }
-        
+
+        return w;
+
     }
 
     public WorldImage makeImage() {
@@ -84,6 +107,8 @@ public class Game2 extends World {
             } else if (worldArray[i].getKey() == 1) {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Blue()));
             } else if (worldArray[i].getKey() == 2) {
+                scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Black()));
+            } else /*if (worldArray[i].getKey() == 3)*/ {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Red()));
             }
         }
@@ -96,16 +121,45 @@ public class Game2 extends World {
             for (int y = 0; y < n; y++) {
                 int i = (y * n) + x;
                 output[i] = new DataStruct(x, y, 0);
+                worldArray[i] = output[i];
             }
         }
-        worldArray = output;
     }
 
-//    public void genScrOne(){
-//        DataStruct[] array;
-//        array = genEmptyArray();
-//        
-//    }
+    public void genScrOne() {
+        genEmptyArray();
+        for (int i = 0; i < worldArray.length; i++) {
+            if (worldArray[i].getX() == 0) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getX() == n-1) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getY() == 0) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getY()== n-1) {
+                worldArray[i].setKey(2);
+            }
+            if (i == middleLeftDoor){
+                worldArray[i].setKey(0);
+            }
+            if (i == middleRightDoor){
+                worldArray[i].setKey(0);
+            }
+            if (i == middleTopDoor){
+                worldArray[i].setKey(0);
+            }
+            if (i == middleBottomDoor){
+                worldArray[i].setKey(0);
+            }
+            
+        }
+        worldArray[middleOfWorld].setKey(1);
+        //worldArray[23].setKey(2);
+
+    }
+
     public Posn calcPin(DataStruct Struct) {
         int x = Struct.getX();
         int y = Struct.getY();
@@ -118,7 +172,7 @@ public class Game2 extends World {
         for (int i = 0; i < (n * n); i++) {
             target = worldArray[i];
             targetKey = target.getKey();
-            if (targetKey == 2) {
+            if (targetKey == 1) {
                 return target;
             } //else should throw an excepttion but this should never be reached
         }
