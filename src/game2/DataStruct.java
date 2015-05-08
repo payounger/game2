@@ -24,10 +24,8 @@ public class DataStruct {
         return key;
     }
 
-    public DataStruct setKey(int i) {
-        DataStruct newby;
-        newby = new DataStruct(this.getX(), this.getY(), i);
-        return newby;
+    public void setKey(int i) {
+        key = i;
     }
 
 }
