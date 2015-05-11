@@ -13,11 +13,13 @@ public class Game2 extends World {
     DataStruct[] worldArray;
     public int ticker = 0;
     int score;
-    public static int middleOfWorld = (n*(((n-1)/2)))+((n-1)/2);
-    public static int middleLeftDoor = ((n-1)/2)*n;
-    public static int middleRightDoor = middleLeftDoor+n-1;
-    public static int middleTopDoor = (n-1)/2;
-    public static int middleBottomDoor = middleTopDoor+((n-1)*n);
+    public static int middleOfWorld = (n * (((n - 1) / 2))) + ((n - 1) / 2);
+    public static int middleLeftDoor = ((n - 1) / 2) * n;
+    public static int middleRightDoor = middleLeftDoor + n - 1;
+    public static int middleTopDoor = (n - 1) / 2;
+    public static int middleBottomDoor = middleTopDoor + ((n - 1) * n);
+    public int currentScr = 0;
+    public int scr0Enemies = 1;
 
     public Game2(DataStruct[] array, int ticks, int score) {
         super();
@@ -30,15 +32,18 @@ public class Game2 extends World {
     public static void main(String[] args) {
         Game2 world;
         world = new Game2(new DataStruct[n * n], 0, 0);
-        world.genScrOne();
+        world.genScrZero();
         world.bigBang(n * side, n * side, 0.15);
 
     }
 
     public World onTick() {
 
-        for(int i = 0; i < worldArray.length; i++){
-            if(worldArray[i].getKey()==4){
+        if (enemiesAliveHuh() == 0) {
+            disableCurrentScrSpawn();
+        }
+        for (int i = 0; i < worldArray.length; i++) {
+            if (worldArray[i].getKey() == 4) {
                 worldArray[i].setKey(0); //this function clears the attack effect every tick
             }
         }
@@ -54,9 +59,10 @@ public class Game2 extends World {
         w = this;
 
         if (ke.equals("right")) {
-            if (playerX != n - 1) {
-                if (worldArray[playerIndex + 1].getKey() == 2) {
-                    return w;
+            if (playerX != n - 1
+                    && worldArray[playerIndex + 1].getKey() != 2) {
+                if (worldArray[playerIndex + 1].getKey() == 3) {
+                    return endOfWorld("right collision");
                 }
                 //worldArray[playerIndex+1].getKey()
                 worldArray[playerIndex].setKey(0);
@@ -66,9 +72,10 @@ public class Game2 extends World {
 
         }
         if (ke.equals("left")) {
-            if (playerX != 0) {
-                if (worldArray[playerIndex - 1].getKey() == 2) {
-                    return w;
+            if (playerX != 0
+                    && worldArray[playerIndex - 1].getKey() != 2) {
+                if (worldArray[playerIndex - 1].getKey() == 3) {
+                    return endOfWorld("left collision");
                 }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex - 1].setKey(1);
@@ -76,9 +83,10 @@ public class Game2 extends World {
             }
         }
         if (ke.equals("up")) {
-            if (playerY != 0) {
-                if (worldArray[playerIndex - n].getKey() == 2) {
-                    return w;
+            if (playerY != 0
+                    && worldArray[playerIndex - n].getKey() != 2) {
+                if (worldArray[playerIndex - n].getKey() == 3) {
+                    return endOfWorld("up collision");
                 }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex - n].setKey(1);
@@ -86,28 +94,32 @@ public class Game2 extends World {
             }
         }
         if (ke.equals("down")) {
-            if (playerY != n - 1) {
-                if (worldArray[playerIndex + n].getKey() == 2) {
-                    return w;
+            if (playerY != n - 1
+                    && worldArray[playerIndex + n].getKey() != 2) {
+                if (worldArray[playerIndex + n].getKey() == 3) {
+                    return endOfWorld("down collision");
                 }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex + n].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
             }
         }
-        
+
         if (ke.equals(" ")) {
-            for(int dx = -1; dx <= 1; dx++){
-                for(int dy = -1; dy <= 1; dy++){
-                    int currentIndex = DXDYIndex(dx, dy);
-//                    if(worldArray[currentIndex].getKey()!=1 | worldArray[currentIndex].getKey() != 2){
-//                        worldArray[currentIndex].setKey(4);
-//                    }
-                    if(worldArray[currentIndex].getKey() != 1){
-                        worldArray[currentIndex].setKey(4);
+            if (playerIndex != middleLeftDoor
+                    && playerIndex != middleRightDoor
+                    && playerIndex != middleTopDoor
+                    && playerIndex != middleBottomDoor) {
+
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        int currentIndex = DXDYIndex(dx, dy);
+                        if (worldArray[currentIndex].getKey() != 1 && worldArray[currentIndex].getKey() != 2) {
+                            worldArray[currentIndex].setKey(4);
+                        }
                     }
                 }
-            } 
+            }
         }
 
         return w;
@@ -147,38 +159,73 @@ public class Game2 extends World {
         }
     }
 
-    public void genScrOne() {
+    public void genScrZero() {
         genEmptyArray();
+        currentScr = 0;
         for (int i = 0; i < worldArray.length; i++) {
             if (worldArray[i].getX() == 0) {
                 worldArray[i].setKey(2);
             }
-            if (worldArray[i].getX() == n-1) {
+            if (worldArray[i].getX() == n - 1) {
                 worldArray[i].setKey(2);
             }
             if (worldArray[i].getY() == 0) {
                 worldArray[i].setKey(2);
             }
-            if (worldArray[i].getY()== n-1) {
+            if (worldArray[i].getY() == n - 1) {
                 worldArray[i].setKey(2);
             }
-            if (i == middleLeftDoor){
+//            if (i == middleLeftDoor) {
+//                worldArray[i].setKey(0);
+//            }
+            if (i == middleRightDoor) {
                 worldArray[i].setKey(0);
             }
-            if (i == middleRightDoor){
-                worldArray[i].setKey(0);
-            }
-            if (i == middleTopDoor){
-                worldArray[i].setKey(0);
-            }
-            if (i == middleBottomDoor){
-                worldArray[i].setKey(0);
-            }
-            
+//            if (i == middleTopDoor) {
+//                worldArray[i].setKey(0);
+//            }
+//            if (i == middleBottomDoor) {
+//                worldArray[i].setKey(0);
+//            }
+
         }
         worldArray[middleOfWorld].setKey(1);
-        worldArray[middleOfWorld+3].setKey(3);
+        worldArray[middleOfWorld + 3].setKey(3);
 
+    }
+
+    public void genScrOne() {
+        genEmptyArray();
+        currentScr = 1;
+        for (int i = 0; i < worldArray.length; i++) {
+            if (worldArray[i].getX() == 0) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getX() == n - 1) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getY() == 0) {
+                worldArray[i].setKey(2);
+            }
+            if (worldArray[i].getY() == n - 1) {
+                worldArray[i].setKey(2);
+            }
+            if (i == middleLeftDoor) {
+                worldArray[i].setKey(0);
+            }
+//            if (i == middleRightDoor) {
+//                worldArray[i].setKey(0);
+//            }
+//            if (i == middleTopDoor) {
+//                worldArray[i].setKey(0);
+//            }
+//            if (i == middleBottomDoor) {
+//                worldArray[i].setKey(0);
+//            }
+
+        }
+        worldArray[middleOfWorld].setKey(1);
+        worldArray[middleOfWorld + 3].setKey(3);
     }
 
     public Posn calcPin(DataStruct Struct) {
@@ -199,17 +246,36 @@ public class Game2 extends World {
         }
         throw new RuntimeException("player object not found");
     }
-    
-    public int calcIndex(int x, int y){
+
+    public int enemiesAliveHuh() {
+        DataStruct target;
+        int targetKey;
+        for (int i = 0; i < (n * n); i++) {
+            target = worldArray[i];
+            targetKey = target.getKey();
+            if (targetKey == 1) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public int calcIndex(int x, int y) {
         return y * (n) + x;
     }
-    
-    public int DXDYIndex(int dx, int dy){
+
+    public int DXDYIndex(int dx, int dy) {
         int playerX = playerLocation().getX();
         int playerY = playerLocation().getY();
         int playerIndex = calcIndex(playerX, playerY);
-        
-        return (playerIndex+(dy*n)+dx);
-        
+
+        return (playerIndex + (dy * n) + dx);
+
+    }
+
+    public void disableCurrentScrSpawn() {
+        if (currentScr == 1) {
+            scr0Enemies = 0;
+        }
     }
 }
