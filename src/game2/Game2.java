@@ -114,6 +114,12 @@ public class Game2 extends World {
                 if (worldArray[playerIndex - n].getKey() == 3) {
                     return endOfWorld("up collision");
                 }
+                if (worldArray[playerIndex - n].getKey() == 6) {
+                    if(gotKeyHuh == 1){
+                        System.out.println("you win!!");
+                        return endOfWorld("winner");
+                    }else return w;
+                }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex - n].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
@@ -169,8 +175,10 @@ public class Game2 extends World {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Red()));
             } else if (worldArray[i].getKey() == 4) {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Green()));
-            } else /* if (worldArray[i].getKey() == 5*/ {
+            } else if (worldArray[i].getKey() == 5) {
                 scene = new OverlayImages(scene, new DiskImage(currentPosn, side / 2, new Blue()));
+            }else /*if (worldArray[i].getKey() == 6)*/ {
+                scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Yellow()));
             }
         }
         return scene;
@@ -209,9 +217,9 @@ public class Game2 extends World {
             if (i == middleRightDoor) {
                 worldArray[i].setKey(0);
             }
-//            if (i == middleTopDoor) {
-//                worldArray[i].setKey(0);
-//            }
+            if (i == middleTopDoor) {
+                worldArray[i].setKey(6);
+            }
 //            if (i == middleBottomDoor) {
 //                worldArray[i].setKey(0);
 //            }
