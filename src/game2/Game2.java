@@ -95,6 +95,9 @@ public class Game2 extends World {
                 if (worldArray[playerIndex - 1].getKey() == 3) {
                     return endOfWorld("left collision");
                 }
+                if (worldArray[playerIndex - 1].getKey() == 5) {
+                    gotKeyHuh = 1;
+                }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex - 1].setKey(1);
                 w = new Game2(worldArray, ticker, 0);
@@ -115,10 +118,15 @@ public class Game2 extends World {
                     return endOfWorld("up collision");
                 }
                 if (worldArray[playerIndex - n].getKey() == 6) {
-                    if(gotKeyHuh == 1){
+                    if (gotKeyHuh == 1) {
                         System.out.println("you win!!");
                         return endOfWorld("winner");
-                    }else return w;
+                    } else {
+                        return w;
+                    }
+                }
+                if (worldArray[playerIndex - n].getKey() == 5) {
+                    gotKeyHuh = 1;
                 }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex - n].setKey(1);
@@ -130,6 +138,9 @@ public class Game2 extends World {
                     && worldArray[playerIndex + n].getKey() != 2) {
                 if (worldArray[playerIndex + n].getKey() == 3) {
                     return endOfWorld("down collision");
+                }
+                if (worldArray[playerIndex + n].getKey() == 5) {
+                    gotKeyHuh = 1;
                 }
                 worldArray[playerIndex].setKey(0);
                 worldArray[playerIndex + n].setKey(1);
@@ -177,7 +188,7 @@ public class Game2 extends World {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Green()));
             } else if (worldArray[i].getKey() == 5) {
                 scene = new OverlayImages(scene, new DiskImage(currentPosn, side / 2, new Blue()));
-            }else /*if (worldArray[i].getKey() == 6)*/ {
+            } else /*if (worldArray[i].getKey() == 6)*/ {
                 scene = new OverlayImages(scene, new RectangleImage(currentPosn, side, side, new Yellow()));
             }
         }
